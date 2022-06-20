@@ -612,24 +612,22 @@ void lbs_to_asm_zret(char var0, char var1, int idx0, int idx1, int * current_byt
 
 /* insere o numero em little endian em hex no codigo */
 
-void num_lendian ( unsigned char *commands, size_t pos, size_t bytes, int number ) {
+void num_lendian(unsigned char *commands, size_t hex_pos, size_t hex_bytes, int num){
 
 	int i = 0;
-	char byte_zero;
+	char byte_zero = 0x00;
+	char num_byte;
 
-	if( number < 0 ) {
-		number = ~(-(number+1));
+	if(num < 0){
+		num = ~(-(num+1));
 		byte_zero = 0xff;
 	}
-	else {
-		byte_zero = 0x00;
-	} 
 
-	while( bytes-- ) {
-		char num_byte = number & 0xff;
-		commands[pos+i] = number ? num_byte : byte_zero;
-		number = number >> 8;
-		i++;
+	for (int j = 0; j < hex_bytes; j++){
+		num_byte = num & 0xff;
+		commands[hex_pos+i] = num ? num_byte : byte_zero;
+		num = num >> 8;
+		i += 1;
 	}
 	
 }

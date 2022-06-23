@@ -3,6 +3,8 @@
 
 #define LINHAS 50
 
+#define debug_on 0 // 0 - off, 1 - on
+
 /* definindo os tamanhos das dos codigos hex para usar depois no codigo sem ter que criar variaveis globais (dica do monitor) */
 
 #define SIZE_FUNCTION 11
@@ -50,10 +52,6 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 void inverte_endian(unsigned char *commands, size_t pos, size_t bytes, int number );
 
 void add_commands(unsigned char *commands, size_t bytes, int * current_byte, unsigned char code[]);
-
-/* variavel para debugar 0 == off, 1 == on */
-
-int view_x86_sintax = 0; // variavel global utilizada para ativar o modo print, caso queira ver o código em assembly, isso foi utilizado para auxiliar na hora da construção do código
 
 /* hex commands in assembly */
 
@@ -228,7 +226,7 @@ void lbs_to_asm_end(int * current_byte, unsigned char code[]){
 
 	--------------------------*/
 	/*debug assembly code */
-	if(view_x86_sintax == 1){
+	if(debug_on == 1){
 		printf("leave\n");
 		printf("ret\n");
 		puts("");
@@ -253,7 +251,7 @@ void lbs_to_asm_func(int * current_byte, unsigned char code[]){
     8:   89 7d e4                mov    %edi,-0x1c(%rbp)
 
 	--------------------------*/
-	if(view_x86_sintax == 1){
+	if(debug_on == 1){
 		printf("label:\n");
 		printf("pushq %%rbp\n");
 		printf("movq %%rsp, %%rbp\n");
@@ -275,7 +273,7 @@ void lbs_to_asm_ret(char var0, int idx0, int * current_byte, unsigned char code[
 	switch(var0){
 
 		case '$': {
-			if(view_x86_sintax){
+			if(debug_on){
 				printf("movl $%d, %%eax\n",idx0);
 			}
 			inverte_endian(code_ret_cst, 1, 4, idx0);
@@ -285,7 +283,7 @@ void lbs_to_asm_ret(char var0, int idx0, int * current_byte, unsigned char code[
 
 		case 'v': {
 			int access_pilha = (-4*(idx0+1));
-			if(view_x86_sintax){
+			if(debug_on){
 				printf("movl %d(%%rbp), %%eax\n",access_pilha);
 				puts("");
 			}
@@ -295,7 +293,7 @@ void lbs_to_asm_ret(char var0, int idx0, int * current_byte, unsigned char code[
 		}
 
 		case 'p': {
-			if(view_x86_sintax){
+			if(debug_on){
 				printf("movl -28(%%rbp), %%eax\n");
 				puts("");
 			}
@@ -319,7 +317,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 	switch(var1){
 		
 		case '$': {
-			if(view_x86_sintax){
+			if(debug_on){
 				printf("movl $%d, %%r10d\n", idx1);
 			}
 			/*	movl cst, r10d --> 41 ba 00 00 00 00 */
@@ -331,7 +329,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 
 		case 'v': {
 			int access_pilha = -4*(idx1+1);
-			if(view_x86_sintax){
+			if(debug_on){
 				printf("movl %d(%%rbp), %%r10d\n", access_pilha);
 			}
 			/* 	movl -x(rbp), r10d --> 44 8b 55 00 [obs: x = acess pilha] */
@@ -342,7 +340,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 		}
 
 		case 'p': {
-			if(view_x86_sintax){
+			if(debug_on){
 				printf("movl -28(%%rbp), %%r10d\n");
 			}
 			/*	movl -28(rbp), r10d --> 44 8b 55 e4 */
@@ -359,7 +357,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 			switch(var2){
 				
 				case '$': {
-					if(view_x86_sintax){
+					if(debug_on){
 						printf("addl $%d, %%r10d\n", idx2);
 					}
 					/*	addl cst, r10d --> 41 81 c2 00 00 00 00 */
@@ -370,7 +368,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 
 				case 'v': {
 					int access_pilha = -4*(idx2+1);
-					if(view_x86_sintax){
+					if(debug_on){
 						printf("addl %d(%%rbp), %%r10d\n", access_pilha);
 					}
 					/*	addl -x(rbp), r10d --> 44 03 55 00 */
@@ -380,7 +378,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 				}
 
 				case 'p': {
-					if(view_x86_sintax){
+					if(debug_on){
 						printf("addl -28(%%rbp), %%r10d\n");
 					}
 					/*	addl -28(rbp), r10d --> 44 03 55 e3 */
@@ -398,7 +396,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 			switch(var2){
 				
 				case '$': {
-					if(view_x86_sintax){
+					if(debug_on){
 						printf("subl $%d, %%r10d\n", idx2);
 					}
 					/*	subl cst, r10d --> 41 83 ea 00 00 00 00 */
@@ -409,7 +407,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 
 				case 'v': {
 					int access_pilha = -4*(idx2+1);
-					if(view_x86_sintax){
+					if(debug_on){
 						printf("subl %d(%%rbp), %%r10d\n", access_pilha);
 					}
 					/* subl -x(rbp), r10d --> 44 2b 55 00 */
@@ -419,7 +417,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 				}
 
 				case 'p': {
-					if(view_x86_sintax){
+					if(debug_on){
 						printf("subl -28(%%rbp), %%r10d\n");
 					}
 					/*	subl -28(rbp), r10d --> 44 2b 55 e4 */
@@ -437,7 +435,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 			switch(var2){
 				
 				case '$': {
-					if(view_x86_sintax){
+					if(debug_on){
 						printf("imull $%d, %%r10d\n", idx2);
 					}
 					/*	imull cst, r10d --> 45 69 d2 00 00 00 00 */
@@ -448,7 +446,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 
 				case 'v': {
 					int access_pilha = -4*(idx2+1);
-					if(view_x86_sintax){
+					if(debug_on){
 						printf("imull %d(%%rbp), %%r10d\n", access_pilha);
 					}
 					/*	imull -x(rbp), r10d --> 44 0f af 55 00 */
@@ -458,7 +456,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 				}
 
 				case 'p': {
-					if(view_x86_sintax){
+					if(debug_on){
 						printf("imull -28(%%rbp), %%r10d\n");
 					}
 					/*	imull -28(rbp), r10d --> 44 0f af 55 e4 */
@@ -472,7 +470,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 		default: printf("Erro na leitura");  //error
 	}
 	int access_pilha = -4*(idx0+1);
-	if(view_x86_sintax){
+	if(debug_on){
 		printf("movl %%r10d, %d(%%rbp)\n", access_pilha);
 		puts("");
 	}
@@ -493,7 +491,7 @@ void lbs_to_asm_call(char var0, int idx0, int fx, char var1, int idx1, int * cur
 	switch(var1){
 
 		case '$': {
-			if(view_x86_sintax){
+			if(debug_on){
 				printf("movl $%d, %%edi\n",idx1);
 				puts("");
 			}
@@ -505,7 +503,7 @@ void lbs_to_asm_call(char var0, int idx0, int fx, char var1, int idx1, int * cur
 		
 		case 'v': {
 			int access_pilha = -4*(idx1+1);
-			if(view_x86_sintax){
+			if(debug_on){
 				printf("movl %d(%%rbp), %%edi\n", access_pilha);
 				puts("");
 			}
@@ -516,7 +514,7 @@ void lbs_to_asm_call(char var0, int idx0, int fx, char var1, int idx1, int * cur
 		}
 
 		case 'p': {
-			if(view_x86_sintax){
+			if(debug_on){
 				printf("movl -28(%%rbp), %%edi\n");
 				puts("");
 			}
@@ -527,7 +525,7 @@ void lbs_to_asm_call(char var0, int idx0, int fx, char var1, int idx1, int * cur
 		default: printf("Erro na leitura");  //error
 	}
 	int access_pilha = -4*(idx0+1);
-	if(view_x86_sintax){
+	if(debug_on){
 		printf("call %d\n",fx);
 		printf("movl %%eax, %d(%%rbp)\n",access_pilha);
 		puts("");
@@ -558,7 +556,7 @@ void lbs_to_asm_zret(char var0, char var1, int idx0, int idx1, int * current_byt
 	switch(var0){
 
 		case '$': {
-			if(view_x86_sintax){
+			if(debug_on){
 				printf("movl $%d, %%r10d\n", idx0);
 				puts("");
 			}
@@ -571,7 +569,7 @@ void lbs_to_asm_zret(char var0, char var1, int idx0, int idx1, int * current_byt
 		case 'v': {
 			int access_pilha = -4*(idx0+1);
 
-			if(view_x86_sintax){
+			if(debug_on){
 				printf("movl %d(%%rbp), %%r10d\n", access_pilha);
 				puts("");
 			}
@@ -582,7 +580,7 @@ void lbs_to_asm_zret(char var0, char var1, int idx0, int idx1, int * current_byt
 		}
 
 		case 'p': {
-			if(view_x86_sintax){
+			if(debug_on){
 				printf("movl -28(%%rbp), %%r10d\n");
 				puts("");
 			}
@@ -592,7 +590,7 @@ void lbs_to_asm_zret(char var0, char var1, int idx0, int idx1, int * current_byt
 		}
 		default: printf("Erro na leitura");  //error
 	}
-	if(view_x86_sintax){
+	if(debug_on){
 
 		printf("cmpl $0, %%r10d\n");
 		printf("movl %c%d, %%eax\n",var1,idx1);

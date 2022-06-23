@@ -7,14 +7,14 @@ int main(int argc, char *argv[]){
 	funcp funcLBS;
 	int res;
 
-	fp = fopen("LBS_teste2.txt","r");
+	fp = fopen("LBS_factorial.txt","r");
 
 	gera_codigo(fp,code,&funcLBS);
 	if (funcLBS == NULL){
 		printf("Erro na geração\n");
 	}
 
-	res = (*funcLBS)(9);
+	res = (*funcLBS)(3);
 	printf("%d", res);
 	fclose(fp);
 	return 0;

@@ -47,7 +47,7 @@ void lbs_to_asm_call(char var0, int idx0, int fx, char var1, int idx1, int * cur
 
 void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2, int idx2, int * current_byte, unsigned char code[]);
 
-void num_lendian(unsigned char *commands, size_t pos, size_t bytes, int number );
+void inverte_endian(unsigned char *commands, size_t pos, size_t bytes, int number );
 
 void add_commands(unsigned char *commands, size_t bytes, int * current_byte, unsigned char code[]);
 
@@ -278,7 +278,7 @@ void lbs_to_asm_ret(char var0, int idx0, int * current_byte, unsigned char code[
 			if(view_x86_sintax){
 				printf("movl $%d, %%eax\n",idx0);
 			}
-			num_lendian(code_ret_cst, 1, 4, idx0);
+			inverte_endian(code_ret_cst, 1, 4, idx0);
 			add_commands(code_ret_cst, SIZE_RET_CST, current_byte, code);
 			break;
 		}
@@ -289,7 +289,7 @@ void lbs_to_asm_ret(char var0, int idx0, int * current_byte, unsigned char code[
 				printf("movl %d(%%rbp), %%eax\n",access_pilha);
 				puts("");
 			}
-			num_lendian(code_ret_var, 2, 1, access_pilha);
+			inverte_endian(code_ret_var, 2, 1, access_pilha);
 			add_commands(code_ret_var, SIZE_RET_VAR, current_byte, code);
 			break;
 		}
@@ -324,7 +324,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 			}
 			/*	movl cst, r10d --> 41 ba 00 00 00 00 */
 	
-			num_lendian(code_mov_cst_reg, 2, 4, idx1);
+			inverte_endian(code_mov_cst_reg, 2, 4, idx1);
 			add_commands(code_mov_cst_reg, SIZE_MOV_CST_REG, current_byte, code);
 			break;
 		}
@@ -336,7 +336,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 			}
 			/* 	movl -x(rbp), r10d --> 44 8b 55 00 [obs: x = acess pilha] */
 
-			num_lendian(code_mov_var_reg, 3, 1, access_pilha);
+			inverte_endian(code_mov_var_reg, 3, 1, access_pilha);
 			add_commands(code_mov_var_reg, SIZE_MOV_VAR_REG, current_byte, code);
 			break;
 		}
@@ -363,7 +363,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 						printf("addl $%d, %%r10d\n", idx2);
 					}
 					/*	addl cst, r10d --> 41 81 c2 00 00 00 00 */
-					num_lendian(code_opr_add_cst, 3, 4, idx2);
+					inverte_endian(code_opr_add_cst, 3, 4, idx2);
 					add_commands(code_opr_add_cst, SIZE_BASE_OPR_CST, current_byte, code);
 					break;
 				}
@@ -374,7 +374,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 						printf("addl %d(%%rbp), %%r10d\n", access_pilha);
 					}
 					/*	addl -x(rbp), r10d --> 44 03 55 00 */
-					num_lendian(code_opr_add_var, 3, 1, access_pilha);
+					inverte_endian(code_opr_add_var, 3, 1, access_pilha);
 					add_commands(code_opr_add_var, SIZE_BASE_OPR_VAR, current_byte, code);
 					break;
 				}
@@ -402,7 +402,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 						printf("subl $%d, %%r10d\n", idx2);
 					}
 					/*	subl cst, r10d --> 41 83 ea 00 00 00 00 */
-					num_lendian(code_opr_sub_cst, 3, 4, idx2);
+					inverte_endian(code_opr_sub_cst, 3, 4, idx2);
 					add_commands(code_opr_sub_cst, SIZE_BASE_OPR_CST, current_byte, code);
 					break;
 				}
@@ -413,7 +413,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 						printf("subl %d(%%rbp), %%r10d\n", access_pilha);
 					}
 					/* subl -x(rbp), r10d --> 44 2b 55 00 */
-					num_lendian(code_opr_sub_var, 3, 1, access_pilha);
+					inverte_endian(code_opr_sub_var, 3, 1, access_pilha);
 					add_commands(code_opr_sub_var, SIZE_BASE_OPR_VAR, current_byte, code);
 					break;
 				}
@@ -441,7 +441,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 						printf("imull $%d, %%r10d\n", idx2);
 					}
 					/*	imull cst, r10d --> 45 69 d2 00 00 00 00 */
-					num_lendian(code_opr_mult_cst, 3, 4, idx2);
+					inverte_endian(code_opr_mult_cst, 3, 4, idx2);
 					add_commands(code_opr_mult_cst, SIZE_MULT_OPR_CST, current_byte, code);
 					break;
 				}
@@ -452,7 +452,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 						printf("imull %d(%%rbp), %%r10d\n", access_pilha);
 					}
 					/*	imull -x(rbp), r10d --> 44 0f af 55 00 */
-					num_lendian(code_opr_mult_var, 4, 1, access_pilha);
+					inverte_endian(code_opr_mult_var, 4, 1, access_pilha);
 					add_commands(code_opr_mult_var, SIZE_MULT_OPR_VAR, current_byte, code);
 					break;
 				}
@@ -477,7 +477,7 @@ void lbs_to_asm_opr(char var0, int idx0, char var1, int idx1, char op, char var2
 		puts("");
 	}
 	/* movl r10d, -x(%rbp) --> 44 89 55 00|hex */
-	num_lendian(code_mov_reg_var, 3, 1, access_pilha);
+	inverte_endian(code_mov_reg_var, 3, 1, access_pilha);
 	add_commands(code_mov_reg_var, SIZE_MOV_REG_VAR, current_byte, code);
 }
 
@@ -498,7 +498,7 @@ void lbs_to_asm_call(char var0, int idx0, int fx, char var1, int idx1, int * cur
 				puts("");
 			}
 			/* movl cst, edi --> bf 00 00 00 00 */
-			num_lendian(code_mov_cst_par, 1, 4, idx1);
+			inverte_endian(code_mov_cst_par, 1, 4, idx1);
 			add_commands(code_mov_cst_par, SIZE_MOV_CST_PAR, current_byte, code);
 			break;
 		}
@@ -510,7 +510,7 @@ void lbs_to_asm_call(char var0, int idx0, int fx, char var1, int idx1, int * cur
 				puts("");
 			}
 			/* movl -x(rbp), edi --> 8b 7d 00 */
-			num_lendian(code_mov_var_par, 2, 1, access_pilha);
+			inverte_endian(code_mov_var_par, 2, 1, access_pilha);
 			add_commands(code_mov_var_par, SIZE_MOV_VAR_PAR, current_byte, code);
 			break;
 		}
@@ -537,8 +537,8 @@ void lbs_to_asm_call(char var0, int idx0, int fx, char var1, int idx1, int * cur
 
 	int aux = (func_pos[fx] - *current_byte - 5);
 
-	num_lendian(code_call, 1, 4, aux);
-	num_lendian(code_call, 7, 1, access_pilha);
+	inverte_endian(code_call, 1, 4, aux);
+	inverte_endian(code_call, 7, 1, access_pilha);
 	add_commands(code_call, SIZE_CALL, current_byte, code);
 }
 
@@ -563,7 +563,7 @@ void lbs_to_asm_zret(char var0, char var1, int idx0, int idx1, int * current_byt
 				puts("");
 			}
 
-			num_lendian(code_mov_cst_reg, 2, 4, idx0);
+			inverte_endian(code_mov_cst_reg, 2, 4, idx0);
 			add_commands(code_mov_cst_reg, SIZE_MOV_CST_REG, current_byte, code);
 			break;
 		}
@@ -576,7 +576,7 @@ void lbs_to_asm_zret(char var0, char var1, int idx0, int idx1, int * current_byt
 				puts("");
 			}
 
-			num_lendian(code_mov_var_reg, 3, 1, access_pilha);
+			inverte_endian(code_mov_var_reg, 3, 1, access_pilha);
 			add_commands(code_mov_var_reg, SIZE_MOV_VAR_REG, current_byte, code);
 			break;
 		}
@@ -612,7 +612,7 @@ void lbs_to_asm_zret(char var0, char var1, int idx0, int idx1, int * current_byt
 
 /* insere o numero em little endian em hex no codigo */
 
-void num_lendian(unsigned char *commands, size_t hex_pos, size_t hex_bytes, int num){
+void inverte_endian(unsigned char *commands, size_t hex_pos, size_t hex_bytes, int num){
 
 	int i = 0;
 	char byte_zero = 0x00;

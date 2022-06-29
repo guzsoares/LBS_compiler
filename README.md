@@ -1,7 +1,7 @@
 # T2-software-basico
 Trabalho 2 de software básico PUC-Rio
 
-Nota final: ??/10
+Nota final: 10/10
 
 Autores:    Gustavo Molina Soares,
             Lucca Vieira Rocha
